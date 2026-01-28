@@ -1,0 +1,27 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  @apply bg-bg text-gray-200 antialiased;
+}
+
+.input {
+  @apply w-full bg-bg border border-border rounded-lg px-3 py-2
+         focus:outline-none focus:ring-2 focus:ring-accent;
+}
+
+.btn-primary {
+  @apply bg-accent hover:bg-indigo-500 text-white
+         py-2 rounded-lg transition;
+}
+
+.card {
+  @apply bg-panel border border-border rounded-xl p-4;
+}
+
+.nav-item {
+  @apply flex items-center gap-2 px-3 py-2 rounded-lg text-gray-300
+         hover:text-white hover:bg-border transition;
+}
+
