@@ -70,6 +70,7 @@ export const schema = buildSchema(`
     total: Float!
     eta: String!
     etaNotes: String
+    deliveredAt: String
   }
 
   # -------------------- QUERY (ONLY ONE) --------------------
@@ -82,7 +83,7 @@ export const schema = buildSchema(`
     getAllRestaurants: [Restaurant!]!
     getOrderById(orderId: ID!): Order
     getOrdersByPhone(phone: String!, verificationToken: String!): [Order!]!
-
+    getOrderHistoryByKitchen(kitchenId: ID!): [Order!]!
   }
 
   # -------------------- MUTATION (ONLY ONE) --------------------
@@ -123,13 +124,21 @@ export const schema = buildSchema(`
     updateOrderETA(
       orderId: ID!
       eta: String!
-      notes: String
+      note: String
     ): Order
 
     cancelOrder(
       orderId: ID!
       reason: String!
     ): Order
+
+    updateProduct(
+      productId: ID!
+      name: String!
+      price: Float!
+    ): Product
+
+    deleteProduct(productId: ID!): Boolean!
 
   }
 `);

@@ -1,6 +1,7 @@
 import { gql } from "@apollo/client";
 import { useQuery, useMutation } from "@apollo/client/react";
 import { useState } from "react";
+import Modal from "../../components/ui/Modal";
 
 const GET_KITCHENS = gql`
   query {
@@ -52,6 +53,7 @@ type Restaurant = {
 export default function RestaurantsPage() {
   const [restaurantName, setRestaurantName] = useState("");
   const [cuisineType, setCuisineType] = useState("");
+  const [open, setOpen] = useState(false);
 
   const [selectedKitchen, setSelectedKitchen] = useState<string | null>(null);
 
@@ -88,29 +90,58 @@ export default function RestaurantsPage() {
   return (
 
     <div className="space-y-6">
-      <div className="card space-y-3 max-w-md">
-        <h3 className="font-medium">Add Restaurant</h3>
-
-        <input
-          className="input"
-          placeholder="Restaurant name"
-          value={restaurantName}
-          onChange={(e) => setRestaurantName(e.target.value)}
-        />
-
-        <input
-          className="input"
-          placeholder="Cuisine type (optional)"
-          value={cuisineType}
-          onChange={(e) => setCuisineType(e.target.value)}
-        />
+      <div className="fixed top-6 right-6 z-50">
 
         <button
-          onClick={handleCreateRestaurant}
-          className="btn-primary"
+          onClick={() => setOpen(true)}
+          className="flex items-center gap-2 px-5 py-3 rounded-xl bg-gradient-to-r from-indigo-500 to-purple-600 text-white font-medium shadow-lg hover:scale-[1.02] hover:shadow-xl transition"
         >
-          Create Restaurant
+          <span className="text-xl">+</span>
+          Add Restaurant
         </button>
+
+        <Modal
+          open={open}
+          onClose={() => setOpen(false)}
+          title="Create Restaurant"
+        >
+          <div className="space-y-4">
+            <input
+              className="input"
+              placeholder="Restaurant name"
+              value={restaurantName}
+              onChange={(e) => setRestaurantName(e.target.value)}
+            />
+
+            <input
+              className="input"
+              placeholder="Cuisine type (optional)"
+              value={cuisineType}
+              onChange={(e) => setCuisineType(e.target.value)}
+            />
+
+            <div className="flex gap-3 pt-2">
+              <button
+                className="btn-secondary flex-1"
+                onClick={() => setOpen(false)}
+              >
+                Cancel
+              </button>
+
+              <button
+                disabled={!restaurantName || !selectedKitchen}
+                className="btn-primary disabled:opacity-50 flex-1"
+                onClick={() => {
+                  handleCreateRestaurant();
+                  setOpen(false);
+                }}
+              >
+                Create
+              </button>
+            </div>
+          </div>
+        </Modal>
+
       </div>
 
       <h1 className="text-2xl font-semibold">Restaurants</h1>

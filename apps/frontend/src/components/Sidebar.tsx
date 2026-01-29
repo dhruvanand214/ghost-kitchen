@@ -34,6 +34,10 @@ export default function Sidebar() {
           <NavLink to="/kitchen/restaurants" className="nav-item">
             <ClipboardList size={18} /> Restaurants
           </NavLink>
+          <NavLink to="/kitchen/orders/history" className="nav-item">
+            <ClipboardList size={18} /> Order History
+          </NavLink>
+
         </>
       )}
 

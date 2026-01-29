@@ -22,6 +22,7 @@ import CustomerRestaurantsPage from "./pages/customer/RestaurantsPage";
 import OrderConfirmationPage from "./pages/customer/OrderConfirmationPage";
 import OrderTrackingPage from "./pages/customer/OrderTrackingPage";
 import OrderLookupPage from "./pages/customer/OrderLookupPage";
+import OrderHistoryPage from "./pages/kitchen/OrderHistoryPage";
 
 export default function App() {
   return (
@@ -67,6 +68,8 @@ export default function App() {
           <Route path="orders" element={<OrdersPage />} />
           <Route path="restaurants" element={<KitchenRestaurantsPage />} />
           <Route path="restaurants/:restaurantId" element={<RestaurantProductsPage />} />
+          <Route path="orders/history" element={<OrderHistoryPage />} />
+
         </Route>
 
         {/* ROOT */}

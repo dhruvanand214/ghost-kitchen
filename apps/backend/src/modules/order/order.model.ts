@@ -47,6 +47,9 @@ const OrderSchema = new mongoose.Schema(
     },
     cancelledBy: {
       type: String
+    },
+    deliveredAt: {
+      type: Date
     }
   },
   { timestamps: true }

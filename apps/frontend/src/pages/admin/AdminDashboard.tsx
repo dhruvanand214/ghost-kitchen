@@ -71,9 +71,9 @@ export default function AdminDashboard() {
     }
   );
 
- const handleCreateRestaurant = async () => {
-  navigate('/admin/restaurants', { state: { kitchenId: selectedKitchen?.id } })
-};
+  const handleCreateRestaurant = async () => {
+    navigate('/admin/restaurants', { state: { kitchenId: selectedKitchen?.id } })
+  };
 
 
   return (
@@ -93,11 +93,10 @@ export default function AdminDashboard() {
             {kitchensData?.getAllKitchens.map((kitchen) => (
               <div
                 key={kitchen.id}
-                className={`card cursor-pointer ${
-                  selectedKitchen?.id === kitchen.id
+                className={`card cursor-pointer ${selectedKitchen?.id === kitchen.id
                     ? "border-accent"
                     : ""
-                }`}
+                  }`}
                 onClick={() => setSelectedKitchen(kitchen)}
               >
                 <h3 className="font-medium">{kitchen.name}</h3>
@@ -118,9 +117,10 @@ export default function AdminDashboard() {
               </h2>
 
               <button
-                onClick={handleCreateRestaurant}
-                className="btn-primary"
+                onClick={() => handleCreateRestaurant()}
+                className="flex items-center gap-2 px-5 py-3 rounded-xl bg-gradient-to-r from-indigo-500 to-purple-600 text-white font-medium shadow-lg hover:scale-[1.02] hover:shadow-xl transition"
               >
+                <span className="text-xl">+</span>
                 Add Restaurant
               </button>
             </div>

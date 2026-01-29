@@ -2,7 +2,7 @@ import { Order } from "../modules/order/order.model";
 import { canUpdateOrderStatus } from "../modules/order/order.flow";
 import { OrderStatus } from "@ghost/shared-types";
 import { io } from "../server";
-import { getKitchenActiveOrders } from "../modules/order/order.aggregation";
+import { getKitchenActiveOrders, getKitchenHistoryOrders } from "../modules/order/order.aggregation";
 import { AuthRequest } from "../middleware/auth";
 import { requireKitchenAccess } from "../middleware/role";
 import jwt from "jsonwebtoken";
@@ -24,7 +24,8 @@ const mapOrder = (order: any) => ({
     items: order.items,
     total: order.total,
     eta: order.eta?.toISOString(),
-    etaNotes: order.etaNotes ?? null
+    etaNotes: order.etaNotes ?? null,
+    deliveredAt: order.deliveredAt ? order.deliveredAt.toISOString() : null
 });
 
 export const root = {
@@ -35,6 +36,19 @@ export const root = {
         return orders.map(mapOrder);
     },
 
+    getOrderHistoryByKitchen: async (
+        { kitchenId }: { kitchenId: string },
+        req: AuthRequest
+    ) => {
+        requireKitchenAccess(req, kitchenId);
+
+        // return Order.find({
+        //     kitchenId,
+        //     status: { $in: ["DELIVERED", "CANCELLED"] }
+        // }).sort({ createdAt: -1 });
+        const orders = await getKitchenHistoryOrders(kitchenId);
+        return orders.map(mapOrder);
+    },
 
     updateOrderStatus: async ({ orderId, status }: {
         orderId: string;
@@ -48,6 +62,9 @@ export const root = {
         }
 
         order.status = status;
+        if (status === "DELIVERED") {
+            order.deliveredAt = new Date();
+        }
         await order.save();
 
         // 🔔 REAL-TIME EVENT (THIS IS THE LINE)
@@ -391,5 +408,51 @@ export const root = {
 
         return orders.map(mapOrder);
     },
+
+    updateProduct: async (
+        {
+            productId,
+            name,
+            price
+        }: {
+            productId: string;
+            name: string;
+            price: number;
+        },
+        req: AuthRequest
+    ) => {
+        // Only Kitchen/Admin
+        if (!req.user || !["KITCHEN", "ADMIN"].includes(req.user.role)) {
+            throw new Error("Unauthorized");
+        }
+
+        const product = await Product.findById(productId);
+        if (!product) throw new Error("Product not found");
+
+        product.name = name;
+        product.price = price;
+        await product.save();
+
+        return product;
+    },
+
+    deleteProduct: async (
+        { productId }: { productId: string },
+        req: AuthRequest
+    ) => {
+        if (!req.user || !["KITCHEN", "ADMIN"].includes(req.user.role)) {
+            throw new Error("Unauthorized");
+        }
+
+        const product = await Product.findById(productId);
+        if (!product) throw new Error("Product not found");
+
+        // Soft delete (recommended)
+        product.isAvailable = false;
+        await product.save();
+
+        return true;
+    },
+
 
 };
