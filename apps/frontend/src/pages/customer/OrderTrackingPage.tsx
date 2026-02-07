@@ -1,11 +1,13 @@
 import { gql } from "@apollo/client";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { socket } from "../../sockets/socket";
 import OrderStatusTimeline from "../../components/OrderStatusTimeline";
 import { useMutation, useQuery } from "@apollo/client/react";
 import OrderItems from "../../components/OrderItems";
 import DeliveryETA from "../../components/DeliveryETA";
+
+/* ---------------- GraphQL ---------------- */
 
 const GET_ORDER = gql`
   query GetOrder($orderId: ID!) {
@@ -35,20 +37,39 @@ const CANCEL_ORDER = gql`
   }
 `;
 
+/* ---------------- Page ---------------- */
+
 export default function OrderTrackingPage() {
   const { orderId } = useParams();
-  const [status, setStatus] = useState<string | null>(null);
-  const [cancelOrder] = useMutation(CANCEL_ORDER);
+  const navigate = useNavigate();
 
   const { data } = useQuery(GET_ORDER, {
-    variables: { orderId },
+    variables: { orderId }
   });
 
+  const [cancelOrder] = useMutation(CANCEL_ORDER);
+
   const order = data?.getOrderById;
-  const [eta, setEta] = useState<string | undefined>(order?.eta);
-  const [etaNote, setEtaNote] = useState<string | undefined>(order?.etaNotes);
+
+  const [status, setStatus] = useState<string | null>(null);
+  const [eta, setEta] = useState<string | undefined>();
+  const [etaNote, setEtaNote] = useState<string | undefined>();
+
+  /* ---------------- Sync initial data ---------------- */
 
   useEffect(() => {
+    if (order) {
+      setStatus(order.status);
+      setEta(order.eta);
+      setEtaNote(order.etaNotes);
+    }
+  }, [order]);
+
+  /* ---------------- Socket updates ---------------- */
+
+  useEffect(() => {
+    if (!orderId) return;
+
     socket.connect();
     socket.emit("JOIN_ORDER", orderId);
 
@@ -78,45 +99,71 @@ export default function OrderTrackingPage() {
       socket.disconnect();
     };
   }, [orderId]);
+
   if (!order) return null;
 
+  const currentStatus = status || order.status;
+
+  const canCancel =
+    currentStatus === "RECEIVED" ||
+    currentStatus === "PREPARING";
+
+  /* ---------------- UI ---------------- */
+
   return (
-    <div className='max-w-md mx-auto p-6 space-y-6'>
-      <h1 className='text-xl font-semibold'>Order #{order.orderNumber}</h1>
-
-      {etaNote && (
-        <p className='text-xs text-gray-400 mt-1'>
-          Note from kitchen: {etaNote}
+    <div className="max-w-md mx-auto p-6 space-y-6">
+      {/* Header */}
+      <div className="space-y-1">
+        <h1 className="text-xl font-semibold">
+          Order #{order.orderNumber}
+        </h1>
+        <p className="text-xs text-gray-400">
+          Tracking your order live
         </p>
-      )}
+      </div>
 
-      {order.status === "RECEIVED" && (
-        <button
-          className='btn-danger w-full mt-4'
-          onClick={() => {
-            cancelOrder({
-              variables: {
-                orderId,
-                reason: "Customer cancelled",
-              },
-            });
-          }}
-        >
-          Cancel Order
-        </button>
-      )}
-
-      {status === "CANCELLED" && (
-        <div className="card bg-red-900/30 text-red-300">
-          ❌ Order Cancelled
+      {/* ETA Note */}
+      {etaNote && (
+        <div className="card text-xs text-gray-300">
+          📝 Note from kitchen: {etaNote}
         </div>
       )}
 
-      <OrderStatusTimeline status={status || order.status} />
+      {/* Cancelled Banner */}
+      {currentStatus === "CANCELLED" && (
+        <div className="card bg-red-900/30 text-red-300">
+          ❌ This order has been cancelled
+        </div>
+      )}
 
+      {/* Status Timeline */}
+      <OrderStatusTimeline status={currentStatus} />
+
+      {/* Order Items */}
       <OrderItems items={order.items} total={order.total} />
 
+      {/* ETA */}
       <DeliveryETA eta={eta} />
+
+      {/* Actions */}
+      <div className="space-y-3 pt-2">
+        {canCancel && (
+          <button
+            className="w-full py-3 rounded-xl bg-red-600/90 hover:bg-red-600 transition font-medium"
+            onClick={() =>
+              cancelOrder({
+                variables: {
+                  orderId,
+                  reason: "Customer cancelled"
+                }
+              })
+            }
+          >
+            Cancel Order
+          </button>
+        )}
+
+      </div>
     </div>
   );
 }

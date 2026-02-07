@@ -1,5 +1,7 @@
 export const logout = () => {
-  localStorage.removeItem("token");
+  localStorage.removeItem("admin_token");
+  localStorage.removeItem("kitchen_token");
+  localStorage.removeItem("customer_token");
   localStorage.removeItem("role");
   localStorage.removeItem("kitchenId");
 

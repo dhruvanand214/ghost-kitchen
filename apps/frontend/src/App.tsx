@@ -23,6 +23,10 @@ import OrderConfirmationPage from "./pages/customer/OrderConfirmationPage";
 import OrderTrackingPage from "./pages/customer/OrderTrackingPage";
 import OrderLookupPage from "./pages/customer/OrderLookupPage";
 import OrderHistoryPage from "./pages/kitchen/OrderHistoryPage";
+import RestaurantProductsAdminPage from "./pages/admin/RestaurantProductsAdminPage";
+import KitchenDetailPage from "./pages/admin/KitchenDetailPage";
+import AppLayout from "./components/layout/AppLayout";
+import CuisinesPage from "./pages/admin/CuisinesPage";
 
 export default function App() {
   return (
@@ -43,7 +47,9 @@ export default function App() {
           path="/admin"
           element={
             <RequireAuth allowedRoles={["ADMIN"]}>
-              <AdminLayout />
+              <AppLayout>
+                <AdminLayout />
+              </AppLayout>
             </RequireAuth>
           }
         >
@@ -51,6 +57,9 @@ export default function App() {
           <Route path="dashboard" element={<AdminDashboard />} />
           <Route path="kitchens" element={<KitchensPage />} />
           <Route path="restaurants" element={<RestaurantsPage />} />
+          <Route path="restaurants/:restaurantId" element={<RestaurantProductsAdminPage />} />
+          <Route path="kitchens/:kitchenId" element={<KitchenDetailPage />} />
+          <Route path="cuisines" element={<CuisinesPage />} />
 
         </Route>
 
@@ -59,7 +68,9 @@ export default function App() {
           path="/kitchen"
           element={
             <RequireAuth allowedRoles={["KITCHEN"]}>
-              <KitchenLayout />
+              <AppLayout>
+                <KitchenLayout />
+              </AppLayout>
             </RequireAuth>
           }
         >

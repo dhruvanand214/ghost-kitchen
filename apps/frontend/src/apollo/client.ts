@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import {
   ApolloClient,
   InMemoryCache,
@@ -13,7 +14,14 @@ const httpLink = createHttpLink({
 });
 
 const authLink = setContext((_, { headers }) => {
-  const token = localStorage.getItem("token");
+  const role = localStorage.getItem("role");
+
+  const token =
+    role === "ADMIN"
+      ? localStorage.getItem("admin_token")
+      : role === "KITCHEN"
+      ? localStorage.getItem("kitchen_token")
+      : localStorage.getItem("customer_token");
 
   return {
     headers: {
@@ -22,6 +30,7 @@ const authLink = setContext((_, { headers }) => {
     }
   };
 });
+
 
 const errorLink = onError((error) => {
   // ✅ GraphQL errors

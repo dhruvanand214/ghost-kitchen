@@ -41,7 +41,13 @@ export default function Login() {
     const { token, role, kitchenId } = res.data.login;
 
     // 🔐 store auth
-    localStorage.setItem("token", token);
+    if (role === "ADMIN") {
+      localStorage.setItem("admin_token", token);
+    } else if (role === "KITCHEN") {
+      localStorage.setItem("kitchen_token", token);
+    } else {
+      localStorage.setItem("customer_token", token);
+    }
     localStorage.setItem("role", role);
     if (kitchenId) {
       localStorage.setItem("kitchenId", kitchenId);
@@ -90,14 +96,14 @@ export default function Login() {
         </form>
 
         <div className="mt-4 text-center text-sm text-gray-400">
-  New kitchen?{" "}
-  <Link
-    to="/signup"
-    className="text-accent hover:underline"
-  >
-    Register your kitchen
-  </Link>
-</div>
+          New kitchen?{" "}
+          <Link
+            to="/signup"
+            className="text-accent hover:underline"
+          >
+            Register your kitchen
+          </Link>
+        </div>
 
       </div>
     </div>

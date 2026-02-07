@@ -20,7 +20,7 @@ export const schema = buildSchema(`
     id: ID!
     name: String!
     kitchenId: ID!
-    cuisineType: String
+    cuisines: [String!]!
     isActive: Boolean!
   }
 
@@ -73,6 +73,12 @@ export const schema = buildSchema(`
     deliveredAt: String
   }
 
+  type Cuisine {
+    id: ID!
+    name: String!
+    isActive: Boolean!
+  }
+
   # -------------------- QUERY (ONLY ONE) --------------------
   type Query {
     getOrdersByKitchen(kitchenId: ID!): [Order!]!
@@ -84,6 +90,7 @@ export const schema = buildSchema(`
     getOrderById(orderId: ID!): Order
     getOrdersByPhone(phone: String!, verificationToken: String!): [Order!]!
     getOrderHistoryByKitchen(kitchenId: ID!): [Order!]!
+    getCuisines(activeOnly: Boolean): [Cuisine!]!
   }
 
   # -------------------- MUTATION (ONLY ONE) --------------------
@@ -105,7 +112,7 @@ export const schema = buildSchema(`
     createRestaurant(
       name: String!
       kitchenId: ID!
-      cuisineType: String
+      cuisines: [String!]!
     ): Restaurant
 
     createOrder(
@@ -139,6 +146,11 @@ export const schema = buildSchema(`
     ): Product
 
     deleteProduct(productId: ID!): Boolean!
+
+    toggleKitchenStatus(kitchenId: ID!, isActive: Boolean!): Kitchen
+
+    createCuisine(name: String!): Cuisine!
+    toggleCuisine(id: ID!, isActive: Boolean!): Cuisine!
 
   }
 `);

@@ -10,7 +10,7 @@ const RestaurantSchema = new mongoose.Schema(
       ref: "Kitchen"
     },
 
-    cuisineType: {type: String},
+    cuisines: {type: [String], default: []},
 
     isActive: {type: Boolean, default: true}
   },

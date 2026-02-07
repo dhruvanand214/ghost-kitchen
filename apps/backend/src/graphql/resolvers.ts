@@ -4,7 +4,7 @@ import { OrderStatus } from "@ghost/shared-types";
 import { io } from "../server";
 import { getKitchenActiveOrders, getKitchenHistoryOrders } from "../modules/order/order.aggregation";
 import { AuthRequest } from "../middleware/auth";
-import { requireKitchenAccess } from "../middleware/role";
+import { requireKitchenAccess, requireKitchenOrAdmin } from "../middleware/role";
 import jwt from "jsonwebtoken";
 import { User } from "../modules/user/user.model";
 import { Kitchen } from "../modules/kitchen/kitchen.model";
@@ -15,6 +15,7 @@ import { Product } from "../modules/product/product.module";
 import bcrypt from "bcrypt";
 import crypto from "crypto";
 import { OTP } from "../modules/otp/otp.model";
+import { Cuisine } from "../modules/cuisine/cuisine.model";
 
 const mapOrder = (order: any) => ({
     id: order._id.toString(),
@@ -218,19 +219,29 @@ export const root = {
         {
             name,
             kitchenId,
-            cuisineType
+            cuisines
         }: {
             name: string;
             kitchenId: string;
-            cuisineType?: string;
+            cuisines: string[];
         },
         req: AuthRequest
     ) => {
         requireAdmin(req);
+        // ✅ Validate cuisines
+        const validCuisines = await Cuisine.find({
+            name: { $in: cuisines },
+            isActive: true
+        });
+
+        if (validCuisines.length !== cuisines.length) {
+            throw new Error("Invalid cuisine selected");
+        }
+
         return Restaurant.create({
             name,
             kitchenId,
-            cuisineType
+            cuisines
         });
     },
 
@@ -263,9 +274,11 @@ export const root = {
         },
         req: AuthRequest
     ) => {
-        // Kitchen must own the restaurant
-        if (!req.user?.kitchenId) throw new Error("Kitchen ID is required");
-        requireKitchenAccess(req, req.user.kitchenId);
+        const restaurant = await Restaurant.findById(restaurantId);
+        if (!restaurant) throw new Error("Restaurant not found");
+
+        // 🔥 FIX IS HERE
+        requireKitchenOrAdmin(req, restaurant.kitchenId.toString());
 
         const product = await Product.create({
             restaurantId,
@@ -291,7 +304,7 @@ export const root = {
             id: r._id.toString(),
             name: r.name,
             kitchenId: r.kitchenId,
-            cuisineType: r.cuisineType,
+            cuisines: r.cuisines,
             isActive: r.isActive
         }));
     },
@@ -302,8 +315,9 @@ export const root = {
         return restaurants.map((r) => ({
             id: r._id.toString(),
             name: r.name,
-            cuisineType: r.cuisineType,
-            kitchenId: r.kitchenId
+            cuisines: r.cuisines,
+            kitchenId: r.kitchenId,
+            isActive: r.isActive
         }));
     },
 
@@ -454,5 +468,50 @@ export const root = {
         return true;
     },
 
+    toggleKitchenStatus: async (
+        { kitchenId, isActive }: { kitchenId: string; isActive: boolean },
+        req: AuthRequest
+    ) => {
+        requireAdmin(req);
+
+        const kitchen = await Kitchen.findById(kitchenId);
+        if (!kitchen) throw new Error("Kitchen not found");
+
+        kitchen.isActive = isActive;
+        await kitchen.save();
+
+        return kitchen;
+    },
+
+    getCuisines: async (
+        { activeOnly }: { activeOnly?: boolean }
+    ) => {
+        if (activeOnly) {
+            return Cuisine.find({ isActive: true });
+        }
+        return Cuisine.find();
+    },
+
+    createCuisine: async (
+        { name }: { name: string },
+        req: any
+    ) => {
+        requireAdmin(req);
+
+        return Cuisine.create({ name });
+    },
+
+    toggleCuisine: async (
+        { id, isActive }: { id: string; isActive: boolean },
+        req: any
+    ) => {
+        requireAdmin(req);
+
+        return Cuisine.findByIdAndUpdate(
+            id,
+            { isActive },
+            { new: true }
+        );
+    }
 
 };

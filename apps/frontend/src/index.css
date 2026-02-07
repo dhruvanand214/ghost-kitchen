@@ -42,3 +42,10 @@ body {
   border-color: rgb(99 102 241);
 }
 
+@media (max-width: 1024px) {
+  .ml-\[288px\] {
+    margin-left: 0;
+  }
+}
+
+

@@ -10,7 +10,7 @@ export default function RequireAuth({
   children,
   allowedRoles
 }: Props) {
-  const token = localStorage.getItem("token");
+  const token = localStorage.getItem("admin_token") || localStorage.getItem("kitchen_token") || localStorage.getItem("customer_token");
   const role = localStorage.getItem("role");
 
   if (!token || !role) {

@@ -24,7 +24,7 @@ export default function SignupKitchen() {
   });
 
   useEffect(() => {
-    if (localStorage.getItem("token")) {
+    if (localStorage.getItem("admin_token") || localStorage.getItem("kitchen_token")) {
       window.location.href = "/";
     }
   }, []);
@@ -44,7 +44,11 @@ export default function SignupKitchen() {
 
     const { token, role, kitchenId } = res.data.kitchenSignup;
 
-    localStorage.setItem("token", token);
+    if (role === "KITCHEN") {
+      localStorage.setItem("kitchen_token", token);
+    } else if (role === "ADMIN") {
+      localStorage.setItem("admin_token", token);
+    }
     localStorage.setItem("role", role);
     localStorage.setItem("kitchenId", kitchenId);
 
