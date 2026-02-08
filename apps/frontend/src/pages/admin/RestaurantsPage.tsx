@@ -29,12 +29,12 @@ const CREATE_RESTAURANT = gql`
   mutation CreateRestaurant(
     $name: String!
     $kitchenId: ID!
-    $cuisineType: String
+    $cuisines: [String!]!
   ) {
     createRestaurant(
       name: $name
       kitchenId: $kitchenId
-      cuisineType: $cuisineType
+      cuisines: $cuisines
     ) {
       id
       name
@@ -75,8 +75,7 @@ export default function RestaurantsPage() {
 
   const [restaurantName, setRestaurantName] =
     useState("");
-  const [cuisineType, setCuisineType] =
-    useState("");
+  const [selectedCuisines, setSelectedCuisines] = useState<string[]>([]);
   const [open, setOpen] = useState(false);
 
   const { data: cuisines } = useQuery(GET_CUISINES);
@@ -101,18 +100,18 @@ export default function RestaurantsPage() {
     useMutation(CREATE_RESTAURANT);
 
   const handleCreateRestaurant = async () => {
-    if (!selectedKitchen || !restaurantName) return;
+    if (!selectedKitchen || !restaurantName || selectedCuisines.length === 0) return;
 
     await createRestaurant({
       variables: {
         name: restaurantName,
         kitchenId: selectedKitchen.id,
-        cuisineType
+        cuisines: selectedCuisines
       }
     });
 
     setRestaurantName("");
-    setCuisineType("");
+    setSelectedCuisines([]);
     setOpen(false);
     refetch();
   };
@@ -277,18 +276,41 @@ export default function RestaurantsPage() {
             }
           />
 
-          <select
-            className="input"
-            value={cuisineType}
-            onChange={(e) => setCuisineType(e.target.value)}
-          >
-            <option value="">Select cuisine</option>
-            {cuisines?.getCuisines.map((c) => (
-              <option key={c.id} value={c.name}>
-                {c.name}
-              </option>
-            ))}
-          </select>
+          {/* Cuisine Multi Select */}
+          <div className="space-y-2">
+            <label className="text-sm text-gray-400">
+              Select cuisines
+            </label>
+
+            <div className="flex flex-wrap gap-2">
+              {cuisines?.getCuisines.map((c) => {
+                const active = selectedCuisines.includes(c.name);
+
+                return (
+                  <button
+                    key={c.id}
+                    onClick={() =>
+                      setSelectedCuisines((prev) =>
+                        active
+                          ? prev.filter((x) => x !== c.name)
+                          : [...prev, c.name]
+                      )
+                    }
+                    className={`
+                      px-3 py-1 rounded-full text-sm transition
+                      ${
+                        active
+                          ? "bg-indigo-600 text-white"
+                          : "bg-gray-800 text-gray-300 hover:bg-gray-700"
+                      }
+                    `}
+                  >
+                    {c.name}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
 
 
           <div className="flex gap-3 pt-2">

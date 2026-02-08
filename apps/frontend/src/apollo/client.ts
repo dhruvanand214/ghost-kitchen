@@ -10,7 +10,7 @@ import { setContext } from "@apollo/client/link/context";
 import { logout } from "../auth/logout";
 
 const httpLink = createHttpLink({
-  uri: "http://localhost:4000/graphql"
+  uri: import.meta.env.VITE_API_URL
 });
 
 const authLink = setContext((_, { headers }) => {
