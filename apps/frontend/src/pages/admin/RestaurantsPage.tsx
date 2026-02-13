@@ -66,6 +66,11 @@ type Restaurant = {
   cuisines?: string[];
 };
 
+type Cuisine = {
+  id: string;
+  name: string;
+};
+
 /* ---------------- Page ---------------- */
 
 export default function RestaurantsPage() {
@@ -78,7 +83,9 @@ export default function RestaurantsPage() {
   const [selectedCuisines, setSelectedCuisines] = useState<string[]>([]);
   const [open, setOpen] = useState(false);
 
-  const { data: cuisines } = useQuery(GET_CUISINES);
+  const { data: cuisines } = useQuery<{
+    getCuisines: Cuisine[];
+  }>(GET_CUISINES);
 
   const { data: kitchens } = useQuery<{
     getAllKitchens: Kitchen[];

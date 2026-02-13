@@ -4,10 +4,14 @@ import { useState } from "react";
 
 /* ---------------- Types ---------------- */
 
-interface Cuisines {
+interface Cuisine {
   id: string;
   name: string;
   isActive: boolean;
+}
+
+interface GetCuisinesData {
+  getCuisines: Cuisine[];
 }
 
 /* ---------------- GraphQL ---------------- */
@@ -45,7 +49,7 @@ const TOGGLE_CUISINE = gql`
 export default function CuisinesPage() {
   const [name, setName] = useState("");
 
-  const { data, refetch } = useQuery(GET_CUISINES);
+  const { data, refetch } = useQuery<GetCuisinesData>(GET_CUISINES);
   const [createCuisine] = useMutation(CREATE_CUISINE);
   const [toggleCuisine] = useMutation(TOGGLE_CUISINE);
 
@@ -79,7 +83,7 @@ export default function CuisinesPage() {
 
       {/* Cuisine list */}
       <div className="grid grid-cols-3 gap-4">
-        {data?.getCuisines.map((c: Cuisines) => (
+        {data?.getCuisines.map((c: Cuisine) => (
           <div
             key={c.id}
             className="card flex justify-between items-center"

@@ -37,6 +37,13 @@ type LocationState = {
   items: Product[];
 };
 
+type CreateOrderMutationData = {
+  createOrder: {
+    id: string;
+    orderNumber: string;
+  };
+};
+
 /* ---------------- Component ---------------- */
 
 export default function CheckoutPage() {
@@ -53,7 +60,8 @@ export default function CheckoutPage() {
   const [phone, setPhone] = useState("");
   const [phoneError, setPhoneError] = useState("");
 
-  const [createOrder, { loading }] = useMutation(CREATE_ORDER);
+  const [createOrder, { loading }] =
+    useMutation<CreateOrderMutationData>(CREATE_ORDER);
 
   /* ---------------- Guards ---------------- */
 
@@ -111,7 +119,9 @@ export default function CheckoutPage() {
       }
     });
 
-    navigate(`/order/confirmation/${res.data.createOrder.id}`);
+    if (res.data?.createOrder?.id) {
+      navigate(`/order/confirmation/${res.data.createOrder.id}`);
+    }
   };
 
   /* ---------------- UI ---------------- */

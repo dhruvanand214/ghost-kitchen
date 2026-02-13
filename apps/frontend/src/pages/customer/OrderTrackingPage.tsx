@@ -1,5 +1,5 @@
 import { gql } from "@apollo/client";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { socket } from "../../sockets/socket";
 import OrderStatusTimeline from "../../components/OrderStatusTimeline";
@@ -41,9 +41,23 @@ const CANCEL_ORDER = gql`
 
 export default function OrderTrackingPage() {
   const { orderId } = useParams();
-  const navigate = useNavigate();
 
-  const { data } = useQuery(GET_ORDER, {
+  const { data } = useQuery<{
+    getOrderById: {
+      id: string;
+      orderNumber: string;
+      status: string;
+      createdAt: string;
+      items: {
+        name: string;
+        quantity: number;
+        priceSnapshot: number;
+      }[];
+      total: number;
+      eta?: string;
+      etaNotes?: string;
+    };
+  }>(GET_ORDER, {
     variables: { orderId }
   });
 

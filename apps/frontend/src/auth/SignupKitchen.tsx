@@ -13,6 +13,14 @@ const KITCHEN_SIGNUP = gql`
   }
 `;
 
+interface KitchenSignupResponse {
+  kitchenSignup: {
+    token: string;
+    role: string;
+    kitchenId: string;
+  };
+}
+
 export default function SignupKitchen() {
   const navigate = useNavigate();
 
@@ -29,7 +37,7 @@ export default function SignupKitchen() {
     }
   }, []);
 
-  const [signup, { loading, error }] = useMutation(KITCHEN_SIGNUP);
+  const [signup, { loading, error }] = useMutation<KitchenSignupResponse>(KITCHEN_SIGNUP);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setForm({ ...form, [e.target.name]: e.target.value });

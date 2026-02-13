@@ -29,7 +29,15 @@ export default function OrderConfirmationPage() {
   const { orderId } = useParams();
   const navigate = useNavigate();
 
-  const { data, loading } = useQuery(GET_ORDER, {
+  const { data, loading } = useQuery<{
+    getOrderById: {
+      id: string;
+      orderNumber: string;
+      status: string;
+      createdAt: string;
+      eta?: string;
+    };
+  }>(GET_ORDER, {
     variables: { orderId }
   });
 
@@ -42,6 +50,8 @@ export default function OrderConfirmationPage() {
   }
 
   const order = data?.getOrderById;
+  if (!order) return null;
+
   const currentStep = STATUS_STEPS.indexOf(order.status);
 
   return (

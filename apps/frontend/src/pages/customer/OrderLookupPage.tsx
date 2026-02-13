@@ -63,7 +63,7 @@ export default function OrderLookupPage() {
     }
 
     setSendingOtp(true);
-    await fetch("http://localhost:4000/api/otp/send", {
+    await fetch(`${import.meta.env.VITE_SOCKET_URL}/api/otp/send`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ phone })
@@ -76,7 +76,7 @@ export default function OrderLookupPage() {
 
   const handleVerifyOtp = async () => {
     setVerifyingOtp(true);
-    const res = await fetch("http://localhost:4000/api/otp/verify", {
+    const res = await fetch(`${import.meta.env.VITE_SOCKET_URL}/api/otp/verify`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ phone, otp })

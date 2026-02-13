@@ -3,6 +3,14 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { gql } from "@apollo/client";
 
+interface LoginResponse {
+  login: {
+    token: string;
+    role: string;
+    kitchenId?: string;
+  };
+}
+
 const LOGIN = gql`
   mutation Login($email: String!, $password: String!) {
     login(email: $email, password: $password) {
@@ -22,7 +30,7 @@ export default function Login() {
     password: ""
   });
 
-  const [login, { loading, error }] = useMutation(LOGIN);
+  const [login, { loading, error }] = useMutation<LoginResponse>(LOGIN);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setForm({ ...form, [e.target.name]: e.target.value });
