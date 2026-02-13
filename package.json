@@ -2,8 +2,7 @@
   "name": "ghost-kitchen",
   "private": true,
   "workspaces": [
-    "apps/*",
-    "packages/*"
+    "apps/*"
   ],
   "scripts": {
     "build": "npm run build --workspaces --if-present"

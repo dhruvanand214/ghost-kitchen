@@ -3,7 +3,7 @@ dotenv.config();
 import bcrypt from "bcrypt";
 import { connectDB } from "../config/db";
 import { User } from "../modules/user/user.model";
-import { UserRole } from "@ghost/shared-types";
+import { UserRole } from "../shared/role.enum";
 
 async function seedAdmin() {
   await connectDB();

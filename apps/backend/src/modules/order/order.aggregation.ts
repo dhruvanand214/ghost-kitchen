@@ -1,6 +1,6 @@
 import { Types } from "mongoose";
-import { OrderStatus } from "@ghost/shared-types";
 import { Order } from "./order.model";
+import { OrderStatus } from "../../shared/order-status.enum";
 
 export const getKitchenActiveOrders = (kitchenId: string) => {
   return Order.aggregate([

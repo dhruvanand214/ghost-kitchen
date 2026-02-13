@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import { OrderStatus } from "@ghost/shared-types";
+import { OrderStatus } from "../../shared/order-status.enum";
 
 const OrderSchema = new mongoose.Schema(
   {

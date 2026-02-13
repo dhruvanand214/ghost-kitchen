@@ -1,4 +1,4 @@
-import { UserRole } from "@ghost/shared-types";
+import { UserRole } from "../shared/role.enum";
 import { AuthRequest } from "./auth";
 
 export const requireAdmin = (req: AuthRequest) => {

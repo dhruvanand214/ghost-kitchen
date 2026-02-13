@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import { UserRole } from "@ghost/shared-types";
+import { UserRole } from "../../shared/role.enum";
 
 const UserSchema = new mongoose.Schema(
   {

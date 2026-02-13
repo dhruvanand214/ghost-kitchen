@@ -1,4 +1,4 @@
-import { OrderStatus } from "@ghost/shared-types";
+import { OrderStatus } from "../../shared/order-status.enum";
 
 export const ORDER_FLOW: Record<OrderStatus, OrderStatus[]> = {
   RECEIVED: [OrderStatus.PREPARING],

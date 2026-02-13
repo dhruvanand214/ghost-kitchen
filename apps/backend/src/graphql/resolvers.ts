@@ -1,6 +1,6 @@
 import { Order } from "../modules/order/order.model";
 import { canUpdateOrderStatus } from "../modules/order/order.flow";
-import { OrderStatus } from "@ghost/shared-types";
+import { OrderStatus } from "../shared/order-status.enum";
 import { io } from "../server";
 import { getKitchenActiveOrders, getKitchenHistoryOrders } from "../modules/order/order.aggregation";
 import { AuthRequest } from "../middleware/auth";
@@ -8,7 +8,7 @@ import { requireKitchenAccess, requireKitchenOrAdmin } from "../middleware/role"
 import jwt from "jsonwebtoken";
 import { User } from "../modules/user/user.model";
 import { Kitchen } from "../modules/kitchen/kitchen.model";
-import { UserRole } from "@ghost/shared-types";
+import { UserRole } from "../shared/role.enum";
 import { Restaurant } from "../modules/restaurant/restaurant.model";
 import { requireAdmin } from "../middleware/role";
 import { Product } from "../modules/product/product.module";
