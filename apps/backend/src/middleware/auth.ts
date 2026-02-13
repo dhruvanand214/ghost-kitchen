@@ -1,35 +1,29 @@
-import jwt from "jsonwebtoken";
 import { Request, Response, NextFunction } from "express";
+import jwt from "jsonwebtoken";
 
-export interface AuthRequest extends Request {
+export type AuthRequest = Request & {
   user?: {
     userId: string;
     role: string;
     kitchenId?: string;
   };
-}
+};
 
 export const authMiddleware = (
   req: AuthRequest,
   _res: Response,
   next: NextFunction
 ) => {
-  const operationName =
-    (req.body as any)?.operationName;
+  const operationName = (req.body as any)?.operationName;
 
-  const PUBLIC_OPERATIONS = [
-    "Login",
-    "KitchenSignup"
-  ];
+  const PUBLIC_OPERATIONS = ["Login", "KitchenSignup"];
 
-  // Allow public operations
   if (operationName && PUBLIC_OPERATIONS.includes(operationName)) {
     return next();
   }
 
-  const authHeader = req.headers.authorization;
+  const authHeader = req.headers?.authorization;
 
-  // Allow guest access if no token
   if (!authHeader) {
     return next();
   }
@@ -40,11 +34,7 @@ export const authMiddleware = (
     const decoded = jwt.verify(
       token,
       process.env.JWT_SECRET as string
-    ) as {
-      userId: string;
-      role: string;
-      kitchenId?: string;
-    };
+    ) as AuthRequest["user"];
 
     req.user = decoded;
   } catch {
