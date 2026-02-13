@@ -8,6 +8,7 @@ import {
 import { onError } from "@apollo/client/link/error";
 import { setContext } from "@apollo/client/link/context";
 import { logout } from "../auth/logout";
+import { navigateTo } from "../utils/Navigation";
 
 const httpLink = createHttpLink({
   uri: import.meta.env.VITE_API_URL
@@ -45,6 +46,7 @@ const errorLink = onError((error) => {
         err.message.includes("jwt expired")
       ) {
         logout();
+        navigateTo("/500");
         return;
       }
     }
@@ -55,6 +57,7 @@ const errorLink = onError((error) => {
     const statusCode = (error.networkError as any)?.statusCode;
     if (statusCode === 401) {
       logout();
+      navigateTo("/401");
     }
   }
 });

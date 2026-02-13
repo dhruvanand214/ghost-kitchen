@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { Routes, Route, Navigate } from "react-router-dom";
 import RequireAuth from "./auth/RequireAuth";
 
 // layouts
@@ -27,65 +27,73 @@ import RestaurantProductsAdminPage from "./pages/admin/RestaurantProductsAdminPa
 import KitchenDetailPage from "./pages/admin/KitchenDetailPage";
 import AppLayout from "./components/layout/AppLayout";
 import CuisinesPage from "./pages/admin/CuisinesPage";
+import Unauthorized401 from "./pages/errors/Unauthorized401";
+import NotFound404 from "./pages/errors/NotFound404";
+import ServerError500 from "./pages/errors/ServerError500";
 
 export default function App() {
   return (
-    <BrowserRouter>
-      <Routes>
-        {/* PUBLIC */}
-        <Route path="/login" element={<Login />} />
-        <Route path="/signup" element={<SignupKitchen />} />
-        <Route path="/menu/:restaurantId" element={<MenuPage />} />
-        <Route path="/checkout/:restaurantId" element={<CheckoutPage />} />
-        <Route path="/menu" element={<CustomerRestaurantsPage />} />
-        <Route path="/order/confirmation/:orderId" element={<OrderConfirmationPage />} />
-        <Route path="/order/track/:orderId" element={<OrderTrackingPage />} />
-        <Route path="/orders" element={<OrderLookupPage />} />
+    <Routes>
+      {/* PUBLIC */}
+      <Route path="/login" element={<Login />} />
+      <Route path="/signup" element={<SignupKitchen />} />
+      <Route path="/menu/:restaurantId" element={<MenuPage />} />
+      <Route path="/checkout/:restaurantId" element={<CheckoutPage />} />
+      <Route path="/menu" element={<CustomerRestaurantsPage />} />
+      <Route path="/order/confirmation/:orderId" element={<OrderConfirmationPage />} />
+      <Route path="/order/track/:orderId" element={<OrderTrackingPage />} />
+      <Route path="/orders" element={<OrderLookupPage />} />
 
-        {/* ADMIN */}
-        <Route
-          path="/admin"
-          element={
-            <RequireAuth allowedRoles={["ADMIN"]}>
-              <AppLayout>
-                <AdminLayout />
-              </AppLayout>
-            </RequireAuth>
-          }
-        >
-          <Route index element={<Navigate to="dashboard" />} />
-          <Route path="dashboard" element={<AdminDashboard />} />
-          <Route path="kitchens" element={<KitchensPage />} />
-          <Route path="restaurants" element={<RestaurantsPage />} />
-          <Route path="restaurants/:restaurantId" element={<RestaurantProductsAdminPage />} />
-          <Route path="kitchens/:kitchenId" element={<KitchenDetailPage />} />
-          <Route path="cuisines" element={<CuisinesPage />} />
+      {/* Error routes */}
+      <Route path="/401" element={<Unauthorized401 />} />
+      <Route path="/500" element={<ServerError500 />} />
 
-        </Route>
+      {/* Catch-all */}
+      <Route path="*" element={<NotFound404 />} />
 
-        {/* KITCHEN */}
-        <Route
-          path="/kitchen"
-          element={
-            <RequireAuth allowedRoles={["KITCHEN"]}>
-              <AppLayout>
-                <KitchenLayout />
-              </AppLayout>
-            </RequireAuth>
-          }
-        >
-          <Route index element={<Navigate to="dashboard" />} />
-          <Route path="dashboard" element={<KitchenDashboard />} />
-          <Route path="orders" element={<OrdersPage />} />
-          <Route path="restaurants" element={<KitchenRestaurantsPage />} />
-          <Route path="restaurants/:restaurantId" element={<RestaurantProductsPage />} />
-          <Route path="orders/history" element={<OrderHistoryPage />} />
+      {/* ADMIN */}
+      <Route
+        path="/admin"
+        element={
+          <RequireAuth allowedRoles={["ADMIN"]}>
+            <AppLayout>
+              <AdminLayout />
+            </AppLayout>
+          </RequireAuth>
+        }
+      >
+        <Route index element={<Navigate to="dashboard" />} />
+        <Route path="dashboard" element={<AdminDashboard />} />
+        <Route path="kitchens" element={<KitchensPage />} />
+        <Route path="restaurants" element={<RestaurantsPage />} />
+        <Route path="restaurants/:restaurantId" element={<RestaurantProductsAdminPage />} />
+        <Route path="kitchens/:kitchenId" element={<KitchenDetailPage />} />
+        <Route path="cuisines" element={<CuisinesPage />} />
 
-        </Route>
+      </Route>
 
-        {/* ROOT */}
-        <Route path="/" element={<LandingPage />} />
-      </Routes>
-    </BrowserRouter>
+      {/* KITCHEN */}
+      <Route
+        path="/kitchen"
+        element={
+          <RequireAuth allowedRoles={["KITCHEN"]}>
+            <AppLayout>
+              <KitchenLayout />
+            </AppLayout>
+          </RequireAuth>
+        }
+      >
+        <Route index element={<Navigate to="dashboard" />} />
+        <Route path="dashboard" element={<KitchenDashboard />} />
+        <Route path="orders" element={<OrdersPage />} />
+        <Route path="restaurants" element={<KitchenRestaurantsPage />} />
+        <Route path="restaurants/:restaurantId" element={<RestaurantProductsPage />} />
+        <Route path="orders/history" element={<OrderHistoryPage />} />
+
+      </Route>
+
+      {/* ROOT */}
+      <Route path="/" element={<LandingPage />} />
+    </Routes>
   );
 }
