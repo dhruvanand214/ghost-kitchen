@@ -22,7 +22,9 @@ const PORT = process.env.PORT || 4000;
 /* -------------------- CORS (HTTP) -------------------- */
 app.use(
   cors({
-    origin: "http://localhost:5173",
+    origin: ["http://localhost:5173",
+      "https://ghost-kitchen-frontend.vercel.app/"
+    ],
     credentials: true,
     methods: ["GET", "POST", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"]
@@ -35,7 +37,9 @@ app.use(express.json());
 /* -------------------- Socket.io -------------------- */
 export const io = new Server(server, {
   cors: {
-    origin: "http://localhost:5173",
+    origin: ["http://localhost:5173",
+      "https://ghost-kitchen-frontend.vercel.app/"
+    ],
     methods: ["GET", "POST"]
   }
 });
