@@ -11,24 +11,25 @@ export interface AuthRequest extends Request {
 
 export const authMiddleware = (
   req: AuthRequest,
-  _res: any,
-  next: any
+  _res: Response,
+  next: NextFunction
 ) => {
-  const { operationName } = req.body || {};
+  const operationName =
+    (req.body as any)?.operationName;
 
   const PUBLIC_OPERATIONS = [
     "Login",
     "KitchenSignup"
   ];
 
-  // Always allow known public ops
-  if (PUBLIC_OPERATIONS.includes(operationName)) {
+  // Allow public operations
+  if (operationName && PUBLIC_OPERATIONS.includes(operationName)) {
     return next();
   }
 
   const authHeader = req.headers.authorization;
 
-  // 👇 No token? Allow as guest
+  // Allow guest access if no token
   if (!authHeader) {
     return next();
   }
@@ -38,14 +39,17 @@ export const authMiddleware = (
   try {
     const decoded = jwt.verify(
       token,
-      process.env.JWT_SECRET!
-    );
-    req.user = decoded as any;
-  } catch (err) {
+      process.env.JWT_SECRET as string
+    ) as {
+      userId: string;
+      role: string;
+      kitchenId?: string;
+    };
+
+    req.user = decoded;
+  } catch {
     console.warn("Invalid token");
   }
 
   next();
 };
-
-
